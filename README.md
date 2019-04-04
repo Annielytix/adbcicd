@@ -1,23 +1,30 @@
-# Data Bricks HOL  - Python & Dev Ops
-## TODOs
-1.  Discuss steps regarding zipping this repo and putting into the participant's ADO
-2.  
+## Azure Databricks  - Python & Dev Ops
+#### Editted by Laura Edell on April 4, 2019
+
 ## Hands on Lab – Abstract
 This hands on lab is designed for the scenario where a team of scientists and engineers are responsible for the development, maintenance and quality of analytical models which are made available to other teams for consumption.
 ## Infrastructure Set Up
 This section covers all infrastructure between Azure Dev Ops and Azure resources for the HOL which must be completed prior to the lab.
 ## Azure Resource Creation
-Covers the creation of all required Azure resources.
-Create Resource Groups
-Begin by creating 3 resource groups.
+These steps should be completed ahead of time - It will make it easier to keep or save after the workshop - 
+
+Step 1: Create Resource Groups - Begin by creating 3 resource groups:
 •	[some-name]-db-dev
-•	[some-name]-db-pipeline
+•	[some-name]-db-stage
 •	[some-name]-db-prod
 
-![alt text](./readme_images/add_resource_groups.png)
+
 
 ### Adding Resources to Resource Groups
-These steps should be completed for resource groups [some-name]-db-dev and [some-name]-db-pipeline.  [some-name]-db-prod will have different resources completely.
+Keep the following in mind:
+
+Resource groups:
+
+[some-name]-db-dev 
+[some-name]-db-stage
+[some-name]-db-prod 
+
+will have different resources completely.
 #### Add Machine Learning Service Workspace
 1.	Select “Add a Resource”.
 
@@ -260,7 +267,7 @@ a.	“az keyvault secret set –vault-name [KeyVault for RG] –name “datalake
 
 ![alt text](./readme_images/mlservice_name.png)
 
-10.  Add the "Alg State"  This changes per resource group.  For the Dev RG, it is "dev", for "Pipeline" it is "pipeline".  If you were to add additional clusters for releases for multi-tenancy it should have a convention to help support that.
+10.  Add the "Alg State"  This changes per resource group.  For the Dev RG, it is "dev", for "stage" it is "stage".  If you were to add additional clusters for releases for multi-tenancy it should have a convention to help support that.
      1.   "az keyvault secret set --vault-name [KeyVault for RG] --name alg-state --value APPROPRIATEVALUE
 
 11.  Add the "Created By".  For now this will simply match "Alg State"'s conventions.
@@ -415,11 +422,11 @@ c.	Git push
 
 ![alt text](./readme_images/PR_options_form.png)
 
-6.	Review the changes with the reviewer you selected.  Ensure both enter ADO and hit “Approve” and then “Complete”.  If you see problems in your peers code; add comments and reject it.  Once both reviewers Approve you can complete.  This will launch the build pipelines & release pipelines which are connected to master.
+6.	Review the changes with the reviewer you selected.  Ensure both enter ADO and hit “Approve” and then “Complete”.  If you see problems in your peers code; add comments and reject it.  Once both reviewers Approve you can complete.  This will launch the build stages & release stages which are connected to master.
  
-# Defining your Build Pipeline
+# Defining your Build stage
 
-Since we are targeting a different Azure Databricks Environment than the one used in the local Dev Loop described earlier in this document, and since we are concerned with security we will be creating a library asset which will allow us to define secrets from a key vault that points to this new environment. These secrets become available as variables in the build pipeline. Variables give you a convenient way to get key bits of data into various parts of the pipeline. As the name suggests, the value of a variable may change from run to run or job to job of your pipeline. Almost any place where a pipeline requires a text string or a number, you can use a variable instead of hard-coding a value. The system will replace the variable with its current value during the pipeline's execution.
+Since we are targeting a different Azure Databricks Environment than the one used in the local Dev Loop described earlier in this document, and since we are concerned with security we will be creating a library asset which will allow us to define secrets from a key vault that points to this new environment. These secrets become available as variables in the build stage. Variables give you a convenient way to get key bits of data into various parts of the stage. As the name suggests, the value of a variable may change from run to run or job to job of your stage. Almost any place where a stage requires a text string or a number, you can use a variable instead of hard-coding a value. The system will replace the variable with its current value during the stage's execution.
 
 ## Creating a Variable Group
 
@@ -431,18 +438,18 @@ Since we are targeting a different Azure Databricks Environment than the one use
  
  ![alt text](./readme_images/ado_variable_group_form.png)
 
-3.	Click the + Add button, select the variables that you want to make available to the pipeline, click ok and then Save to make sure that your changes are persisted to your Azure DevOps instance
+3.	Click the + Add button, select the variables that you want to make available to the stage, click ok and then Save to make sure that your changes are persisted to your Azure DevOps instance
  
-![alt text](./readme_images/ado_variable_group_available_to_pipeline.png)
+![alt text](./readme_images/ado_variable_group_available_to_stage.png)
 
-## Create a Build Pipeline in the Visual Designer
+## Create a Build stage in the Visual Designer
 
-The intention of this step is to create an Azure DevOps Pipeline that will mimic the steps from the Local Build Loop, but targets a different Azure Databrick Environment for the training .The connection details of this environment will not be available to the scientists directly and will be managed by the operations team. This pipeline will execute when a PR to master is approved and completed.
-1.	In your Azure DevOps tenant, navigate to Pipelines -> Builds and click on + New and select New build pipeline.
+The intention of this step is to create an Azure DevOps stage that will mimic the steps from the Local Build Loop, but targets a different Azure Databrick Environment for the training .The connection details of this environment will not be available to the scientists directly and will be managed by the operations team. This stage will execute when a PR to master is approved and completed.
+1.	In your Azure DevOps tenant, navigate to stages -> Builds and click on + New and select New build stage.
  
-![alt text](./readme_images/ado_new_build_pipeline.png)
+![alt text](./readme_images/ado_new_build_stage.png)
 
-2.	Select your source and make sure to select the master branch as we want to make sure that the pipeline is attached the branch that we will be monitoring for Pull Requests. Click Continue.
+2.	Select your source and make sure to select the master branch as we want to make sure that the stage is attached the branch that we will be monitoring for Pull Requests. Click Continue.
 
 ![alt text](./readme_images/ado_build_pipe_repo_type.png)
 
@@ -450,7 +457,7 @@ The intention of this step is to create an Azure DevOps Pipeline that will mimic
 
 ![alt text](./readme_images/ado_build_pipe_select_empty_job.png)
 
-4.	Name your Pipeline accordingly and select the Hosted Ubuntu 1604 Build Agent from the Agent Pool.
+4.	Name your stage accordingly and select the Hosted Ubuntu 1604 Build Agent from the Agent Pool.
 
 ![alt text](./readme_images/ado_build_pipe_set_build_agent_type.png)
 
@@ -458,13 +465,13 @@ The intention of this step is to create an Azure DevOps Pipeline that will mimic
 
 ![alt text](./readme_images/ado_build_pipe_link_variable_group.png)
  
-6.	Select the Staging Environment Variable Group and Click Link. Your pipeline now has access to all the runtime environmental variables to connect to the Staging Environment.
+6.	Select the stage Environment Variable Group and Click Link. Your stage now has access to all the runtime environmental variables to connect to the stage Environment.
 
-![alt text](./readme_images/ado_build_pipe_var_group_staging.png)
+![alt text](./readme_images/ado_build_pipe_var_group_stage.png)
 
 7.	Click back onto Tasks on the menu and click +on the Agent Job to Add the Tasks that you will be configuring for the build process.
 
-![alt text](./readme_images/ado_build_pipe_staging_add_tasks.png)
+![alt text](./readme_images/ado_build_pipe_stage_add_tasks.png)
  
 8.	Type “CLI” in the Search Box and Click the Azure CLI”ADD” button four times.
 
@@ -491,7 +498,7 @@ Your Agent Job Step should look like the following when you have completed.
 
  ![alt text](./readme_images/verify_ado_build_pipe_post_pub_cov_add.png)
 
-12.	The First Azure CLI Task will be used to configure the agent environment and make sure that the required packages are installed to execute the rest of the pipeline. Provide the task with a descriptive name, Select the appropriate Azure Subscription, set the Script Location to “Inline Script” and add the flowing to the inline script window:
+12.	The First Azure CLI Task will be used to configure the agent environment and make sure that the required packages are installed to execute the rest of the stage. Provide the task with a descriptive name, Select the appropriate Azure Subscription, set the Script Location to “Inline Script” and add the flowing to the inline script window:
 pip3 install -U setuptools
 python3 -m install --upgrade pip
 pip3 install --upgrade azureml-sdk[notebooks]
@@ -541,7 +548,7 @@ Set the remainder of the task properties as depicted below:
 
  ![alt text](./readme_images/ado_pub_test_cov_p2.png)
 
-20.	 On the Agent Job Click the + in order to add a task that will be used to publish the build artifacts for use in a release pipeline later.
+20.	 On the Agent Job Click the + in order to add a task that will be used to publish the build artifacts for use in a release stage later.
 
  ![alt text](./readme_images/ado_add_task.png)
 
@@ -555,20 +562,20 @@ Configure the task as follows:
 
 ![alt text](./readme_images/ado_add_pub_artifacts_config_p2.png)
  
-21.	Enable the Continuous Integration trigger on the pipeline which will make sure that every time a change in made to the master branch of the repository this pipeline will execute. Click the Triggers menu item in the menu bar and click the checkbox to enable continuous integration.
+21.	Enable the Continuous Integration trigger on the stage which will make sure that every time a change in made to the master branch of the repository this stage will execute. Click the Triggers menu item in the menu bar and click the checkbox to enable continuous integration.
  
 ![alt text](./readme_images/ado_cont_int_trigger.png)
 
-You can now Save and Queue this pipeline for a manual build to make sure that it executes from end to end without any issues. 
+You can now Save and Queue this stage for a manual build to make sure that it executes from end to end without any issues. 
 
-Output from the pipeline should resemble the following:
+Output from the stage should resemble the following:
  
 ![alt text](./readme_images/ado_output_successful_build.png)
 
-## Defining your Release Pipeline
+## Defining your Release stage
 
-While release pipelines are often used to deliver artifacts in a deployed state, our scenario calls for an different approach. Our build artifact is an image that contains our tested model and we will be creating a Two Stage Release that will first deliver the correct image to aQA environment where it can be picked up and be tested by a product team. Once all conditions for the product team is satisfied a release manager will manually approve the Production release step and the model will become available for consumption in the Production Environment.
-Creating Variable Groups Required for the Release Pipeline
+While release stages are often used to deliver artifacts in a deployed state, our scenario calls for an different approach. Our build artifact is an image that contains our tested model and we will be creating a Two Stage Release that will first deliver the correct image to aQA environment where it can be picked up and be tested by a product team. Once all conditions for the product team is satisfied a release manager will manually approve the Production release step and the model will become available for consumption in the Production Environment.
+Creating Variable Groups Required for the Release stage
 1.	Click on the Library menu item in the Azure DevOps portal and click 
 
 ![alt text](./readme_images/ado_rp_add_variable_group.png)
@@ -577,14 +584,14 @@ Creating Variable Groups Required for the Release Pipeline
 
 ![alt text](./readme_images/ado_rp_qa_variable_form.png) 
 
-3.	After each Variable Value has been assigned click the   to encrypt its value in the pipeline.
+3.	After each Variable Value has been assigned click the   to encrypt its value in the stage.
 4.	Repeat Steps 2 and 3 above to set up a variable group for the targeted Production Environment.
-### Create the Release Pipeline
-1.	In the Azure DevOps portal Click on Pipelines -> Releases in the left menu
+### Create the Release stage
+1.	In the Azure DevOps portal Click on stages -> Releases in the left menu
 
 ![alt text](./readme_images/ado_rp_rp_button_click.png) 
 
-2.	Click The New pipeline menu item and select New release pipeline 
+2.	Click The New stage menu item and select New release stage 
 
 ![alt text](./readme_images/ado_rp_new_rp.png) 
 
@@ -592,7 +599,7 @@ Creating Variable Groups Required for the Release Pipeline
 
 ![alt text](./readme_images/ado_rp_gated_prod.png) 
 
-4.	Add the build artifacts and link the release pipeline to its associated build pipeline.
+4.	Add the build artifacts and link the release stage to its associated build stage.
 
 ![alt text](./readme_images/ado_rp_add_build_artifacts.png) 
 
@@ -610,7 +617,7 @@ Note: The value  in the Source alias text area will be required to correctly con
 ![alt text](./readme_images/ado_rp_qa_cli_2.png) 
 
 ** Make sure that the working directory set above reflects the generated path correct path here
-$(System.DefaultWorkingDirectory)/<Insert Correct Path Here>/PipelineArtifacts
+$(System.DefaultWorkingDirectory)/<Insert Correct Path Here>/stageArtifacts
 
 7.	Repeat Step 6 above for the Production Stage . 
 
